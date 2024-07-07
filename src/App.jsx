@@ -7,8 +7,13 @@ import './App.css'
 
 
     function App(){
+        const STARTING_TIME = 5
+
+
         const [text, setText] = useState("")
-        const [timeRemaining, setTimeRemaining] = useState('5')
+        const [timeRemaining, setTimeRemaining] = useState('STARTING_TIME')
+        const [isTimeRunning, setIsTimeRunning] = useState(false)
+        const [wordCount, setWordCount] = useState(0)
 
         function handleChange(e){
             const {value} = e.target
@@ -20,15 +25,30 @@ import './App.css'
             const filteredWords = wordsArr.filter(word => word !== "")
             return filteredWords.length
         }
+
+        function startGame(){
+            setIsTimeRunning(true)
+            setTimeRemaining(STARTING_TIME)
+            setText("")
+        }
+
+        function endGame(){
+            setIsTimeRunning(false)
+            setWordCount(calculateWordCount(text))
+            
+        }
         
         useEffect(() => {
-            if(timeRemaining > 0){
+            if(isTimeRunning && timeRemaining > 0){
 
                 setTimeout(() => {
                     setTimeRemaining(time => time -1)
                 }, 1000)
-                }
-            },[timeRemaining])
+            } else if(timeRemaining === 0){
+                endGame()
+            }
+
+            }, [timeRemaining, isTimeRunning])
             
 
       return (
@@ -37,12 +57,18 @@ import './App.css'
               <textarea 
                 onChange={handleChange}
                 value={text}
+                disabled={!isTimeRunning}
+
               
               />
               <h4>Time remaining: {timeRemaining} </h4>
               {/* onClick is anonymous function */}
-              <button onClick={() => console.log (calculateWordCount(text))}>Start</button>
-              <h1>Word count: ???</h1>
+              <button 
+              onClick={startGame}
+              disabled={isTimeRunning}
+              
+              >Start</button>
+              <h1>Word count: {wordCount}</h1>
           </div>
           
       )
